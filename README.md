@@ -5,3 +5,6 @@
 ## Конфигурация
 - Прописать базу данных в кфг
 - Настроить конвертацию флагов
+
+## Требования
+- [CSSharp](https://github.com/roflmuffin/CounterStrikeSharp)
