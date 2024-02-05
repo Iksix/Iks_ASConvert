@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Data;
+using System.Numerics;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
@@ -23,11 +24,6 @@ public class Iks_ASConvert : BasePlugin, IPluginConfig<PluginConfig>
 
     public PluginConfig Config { get; set; }
 
-
-    public override void Load(bool hotReload)
-    {
-        Console.WriteLine("Hello World!");
-    }
     public void OnConfigParsed(PluginConfig config)
     {
         _dbConnectionString = "Server=" + config.host + ";Database=" + config.database
@@ -54,7 +50,7 @@ public class Iks_ASConvert : BasePlugin, IPluginConfig<PluginConfig>
                 var reader = await comm.ExecuteReaderAsync();
                 while (await reader.ReadAsync())
                 {
-                    admins.Add(new Admin(reader.GetString("steamid"), reader.GetString("flags")));
+                    admins.Add(new Admin(reader.GetString("steamid"), reader.GetString("flags"), reader.GetInt32("immunity")));
                 }
             }
         }
@@ -75,12 +71,14 @@ public class Iks_ASConvert : BasePlugin, IPluginConfig<PluginConfig>
         foreach (var admin in admins)
         {
             AdminManager.ClearPlayerPermissions(admin.Steamid);
+            AdminManager.SetPlayerImmunity(admin.Steamid, 0);
 
             foreach (var flags in Config.ConvertFlags)
             {
                 if (admin.Flags.Contains(flags.Key))
                 {
                     AdminManager.AddPlayerPermissions(admin.Steamid, flags.Value.ToArray());
+                    AdminManager.SetPlayerImmunity(admin.Steamid, admin.Immunity < 0 ? 0 : (uint)admin.Immunity);
                     Console.WriteLine($"[Iks_AsConverter] Admin {admin.Steamid.ToString()} converted to {string.Join(", ", flags.Value)}");
                 }
             }

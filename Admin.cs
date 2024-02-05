@@ -8,10 +8,12 @@ public class Admin
 {
     public SteamID Steamid;
     public string Flags;
+    public int Immunity;
 
-    public Admin(string steamid, string flags)
+    public Admin(string steamid, string flags, int immunity)
     {
         Steamid = new SteamID(UInt64.Parse(steamid));
         Flags = flags;
+        Immunity = immunity;
     }
 }
